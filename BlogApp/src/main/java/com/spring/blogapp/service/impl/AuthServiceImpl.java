@@ -9,6 +9,7 @@ import com.spring.blogapp.model.RegisterDTO;
 import com.spring.blogapp.repository.RoleRepository;
 import com.spring.blogapp.repository.UserRepository;
 import com.spring.blogapp.service.AuthService;
+import com.spring.blogapp.util.JwtTokenProvider;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,13 +31,16 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private JwtTokenProvider jwtTokenProvider;
+
     @Autowired
     public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository,
-                           PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+                           PasswordEncoder passwordEncoder, RoleRepository roleRepository, JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(accountLogin.getUsername(),accountLogin.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "Login Success";
+        return jwtTokenProvider.genarateToken(authentication);
     }
 
     @Override

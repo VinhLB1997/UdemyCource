@@ -1,8 +1,10 @@
 package com.spring.blogapp.service.impl;
 
+import com.spring.blogapp.entity.Category;
 import com.spring.blogapp.entity.Post;
 import com.spring.blogapp.exception.DataNotFoundException;
 import com.spring.blogapp.model.PostDTO;
+import com.spring.blogapp.repository.CategoryRepository;
 import com.spring.blogapp.repository.PostRepository;
 import com.spring.blogapp.response.PostPaginationResponse;
 import com.spring.blogapp.service.PostService;
@@ -23,9 +25,13 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
 
+    private CategoryRepository categoryRepository;
+
     @Override
     public PostDTO createPost(PostDTO param) {
+        Category category = categoryRepository.findById(param.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Category", "id", String.valueOf(param.getCategoryId())));
         Post post = mapToEntity(param);
+        post.setCategory(category);
         postRepository.save(post);
         return mapToDTO(post);
     }
@@ -55,8 +61,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO updatePost(Long id, PostDTO param) {
         Post post = postRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Post", "id", String.valueOf(id)));
+        Category category = categoryRepository.findById(param.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Category", "id", String.valueOf(param.getCategoryId())));
+        param.setId(post.getId());
         mapToEntity(param, post);
-        post.setId(id);
+        post.setCategory(category);
         return mapToDTO(postRepository.save(post));
     }
 
