@@ -31,6 +31,11 @@ public class SecurityWebConfig {
         http.csrf().disable().authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement( session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
